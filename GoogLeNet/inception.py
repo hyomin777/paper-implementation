@@ -9,19 +9,21 @@ class Inception(nn.Module):
             in_channels, 
             conv_1x1,
             conv_3x3,
+            conv_3x3_reduce,
             conv_5x5,
+            conv_5x5_reduce,
             conv_pool
             ):
         super().__init__()
 
         self.branch1 = BasicConv2d(in_channels, conv_1x1, kernel_size=1)
         self.branch2 = nn.Sequential(
-            BasicConv2d(in_channels, conv_1x1, kernel_size=1),
-            BasicConv2d(conv_1x1, conv_3x3, kernel_size=3, padding=1)
+            BasicConv2d(in_channels, conv_3x3_reduce, kernel_size=1),
+            BasicConv2d(conv_3x3_reduce, conv_3x3, kernel_size=3, padding=1)
         )
         self.branch3 = nn.Sequential(
-            BasicConv2d(in_channels, conv_1x1, kernel_size=1),
-            BasicConv2d(conv_1x1, conv_5x5, kernel_size=5, padding=2)
+            BasicConv2d(in_channels, conv_5x5_reduce, kernel_size=1),
+            BasicConv2d(conv_5x5_reduce, conv_5x5, kernel_size=5, padding=2)
         )
         self.branch4 = nn.Sequential(
             nn.MaxPool2d(kernel_size=3, stride=1, padding=1),
