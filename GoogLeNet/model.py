@@ -1,11 +1,11 @@
 import torch
 import torch.nn as nn
 from basic_layer import BasicConv2d, BasicFC
-from inception import Inception
+from inception import Inception, AuxiliaryClassifier
 
 
 class GoogLeNet(nn.Module):
-    def __init__(self):
+    def __init__(self, aux = True, num_classes=1000):
         super().__init__()
         self.sequential1 = nn.Sequential(
             BasicConv2d(3, 64, kernel_size=7, stride=2, padding=1),
@@ -41,7 +41,10 @@ class GoogLeNet(nn.Module):
 
         self.flatten = nn.Flatten()
         self.dropout = nn.Dropout(0.7, inplace=True)
-        self.fc = BasicFC(1024, 1000)
+        self.fc = BasicFC(1024, num_classes)
+
+        self.aux1 = AuxiliaryClassifier(512, num_classes) if aux else None
+        self.aux2 = AuxiliaryClassifier(528, num_classes) if aux else None
 
     def forward(self, x):
         x = self.sequential1(x)
