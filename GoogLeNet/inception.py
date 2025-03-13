@@ -8,11 +8,11 @@ class Inception(nn.Module):
             self, 
             in_channels, 
             conv_1x1,
-            conv_3x3,
             conv_3x3_reduce,
-            conv_5x5,
+            conv_3x3,
             conv_5x5_reduce,
-            conv_pool
+            conv_5x5,
+            pool_proj
             ):
         super().__init__()
 
@@ -27,7 +27,7 @@ class Inception(nn.Module):
         )
         self.branch4 = nn.Sequential(
             nn.MaxPool2d(kernel_size=3, stride=1, padding=1),
-            BasicConv2d(in_channels, conv_pool, kernel_size=1)
+            BasicConv2d(in_channels, pool_proj, kernel_size=1)
         )
 
 
