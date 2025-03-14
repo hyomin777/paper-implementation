@@ -45,12 +45,12 @@ class Inception(nn.Module):
 class AuxiliaryClassifier(nn.Module):
     def __init__(self, in_channels, num_classes):
         super().__init__()
-        self.avg_pool = nn.AvgPool2d(kernel_size=5, stride=3)
+        self.avg_pool = nn.AdaptiveAvgPool2d((4, 4))
         self.conv = BasicConv2d(in_channels, 128, kernel_size=1)
         self.flatten = nn.Flatten()
         self.fc1 = BasicFC(128 * 4 * 4, 1024)
         self.fc2 = BasicFC(1024, num_classes)
-        self.dropout = nn.Dropout(0.7, inplace=True)
+        self.dropout = nn.Dropout(0.7)
     
     def forward(self, x):
         x = self.conv(self.avg_pool(x))
