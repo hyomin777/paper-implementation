@@ -1,9 +1,9 @@
 from typing import Optional
 from collections import namedtuple
-import torch
+
 import torch.nn as nn
-import torch.nn.functional as F
 from torch import Tensor
+
 from basic_layer import BasicConv2d, BasicFC
 from inception import Inception, AuxiliaryClassifier
 
@@ -18,7 +18,7 @@ class GoogLeNet(nn.Module):
         self.aux = aux
         self.sequential1 = nn.Sequential(
             BasicConv2d(3, 64, kernel_size=7, stride=2, padding=1),
-            nn.MaxPool2d(kernel_size=3, stride=2, padding=1, ceil_mode=True)
+            nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
         )
 
         self.sequential2 = nn.Sequential(
@@ -45,12 +45,12 @@ class GoogLeNet(nn.Module):
             nn.MaxPool2d(kernel_size=3, stride=2, padding=1),
             Inception(832, 256, 160, 320, 32, 128, 128),
             Inception(832, 384, 192, 384, 48, 128, 128),
-            nn.AvgPool2d(kernel_size=7, stride=1)
+            nn.AdaptiveAvgPool2d((1, 1))
         )
 
         self.flatten = nn.Flatten()
-        self.dropout = nn.Dropout(0.7, inplace=True)
-        self.fc = BasicFC(1024, num_classes)
+        self.dropout = nn.Dropout(0.7)
+        self.fc = nn.Linear(1024, num_classes)
 
         self.aux1 = AuxiliaryClassifier(512, num_classes) if aux else None
         self.aux2 = AuxiliaryClassifier(528, num_classes) if aux else None

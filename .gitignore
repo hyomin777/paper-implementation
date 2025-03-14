@@ -1,4 +1,6 @@
+__pycache__
 tiny-imagenet-200
 data
 result
 test.ipynb
+model_weights.pth
