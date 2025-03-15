@@ -4,7 +4,7 @@ from collections import namedtuple
 import torch.nn as nn
 from torch import Tensor
 
-from basic_layer import BasicConv2d, BasicFC
+from basic_layer import BasicConv2d
 from inception import Inception, AuxiliaryClassifier
 
 
