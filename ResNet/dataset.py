@@ -3,7 +3,7 @@ import torch
 from torchvision.datasets import CIFAR10
 import torchvision.transforms as transforms
 
-from PIL import Image
+from config import batch_size
 
 
 class CustomedCIFAR10(CIFAR10):
@@ -31,5 +31,5 @@ test_transform = transforms.Compose([
 train_dataset = CustomedCIFAR10(root="./data", train=True, transform=train_transform)
 test_dataset = CustomedCIFAR10(root="./data", train=False, transform=test_transform)
 
-train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=128, shuffle=True)
-test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=128, shuffle=False)
+train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
