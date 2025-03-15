@@ -47,7 +47,7 @@ class ResidualBlock(nn.Module):
         super().__init__()
         self.conv = nn.Sequential(
             BasicConv2d(in_channels, out_channels, stride=stride),
-            nn.Conv2d(out_channels, out_channels, stride=1, padding=1),
+            nn.Conv2d(out_channels, out_channels, kernel_size=3, stride=1, padding=1)
         )
         self.pool = nn.MaxPool2d(kernel_size=2, stride=2)
 
