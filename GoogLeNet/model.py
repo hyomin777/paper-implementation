@@ -45,7 +45,7 @@ class GoogLeNet(nn.Module):
             nn.MaxPool2d(kernel_size=3, stride=2, padding=1),
             Inception(832, 256, 160, 320, 32, 128, 128),
             Inception(832, 384, 192, 384, 48, 128, 128),
-            nn.AdaptiveAvgPool2d((1, 1))
+            nn.AvgPool2d(kernel_size=7, stride=1)
         )
 
         self.flatten = nn.Flatten()

@@ -12,15 +12,16 @@ def train_main(load_state=False, weights_path=None):
     model = GoogLeNet(num_classes=100).to(device)
     if load_state and weights_path is not None:
         model.load_state_dict(torch.load(weights_path))
+        print("Loaded saved model weights.")
 
     criterion = GoogLeNetLoss().to(device)
     optimizer = optim.Adam(model.parameters(), lr=lr)
 
-    for epoch in tqdm(range(epochs)):
+    for epoch in tqdm(range(1, epochs+1)):
         model.train()
         train_total_loss = 0.0
 
-        for x, y in train_loader:
+        for x, y in tqdm(train_loader):
             x:Tensor = x.to(device)
             y:Tensor = y.to(device)
 
@@ -35,7 +36,11 @@ def train_main(load_state=False, weights_path=None):
             
         train_avg_loss = train_total_loss / len(train_loader)
         print(f"Epoch: {epoch}, Loss: {train_avg_loss:.3f}")
-        torch.save(model.state_dict(), f"model_weights_{epoch}.pth")
+
+        if epoch % 10 == 0:
+            weights_name = f"model_weights_{epoch}.pth"
+            torch.save(model.state_dict(), weights_name)
+            print(f"Model weights:{weights_name} saved")
 
         with torch.no_grad():
             model.eval()
@@ -61,4 +66,4 @@ def train_main(load_state=False, weights_path=None):
 
 
 if __name__ == "__main__":
-    train_main(load_state=True, weights_path="model_weights.pth")
+    train_main(load_state=True, weights_path="model_weights_0.pth")

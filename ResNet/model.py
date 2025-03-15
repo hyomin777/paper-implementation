@@ -1,15 +1,16 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch import Tensor
 
 
-class PlainNet(nn.Module):
+class ResNet(nn.Module):
     def __init__(self, num_classes=10):
         super().__init__()
         self.conv1 = BasicConv2d(3, 16, kernel_size=3, stride=1, padding=1)
-        self.block1 = make_block(in_channels=16, out_channels=16, stride=1)
-        self.block2 = make_block(in_channels=16, out_channels=32, stride=2)
-        self.block3 = make_block(in_channels=32, out_channels=64, stride=2)
+        self.block1 = ResidualBlock(in_channels=16, out_channels=16, stride=1)
+        self.block2 = ResidualBlock(in_channels=16, out_channels=32, stride=2)
+        self.block3 = ResidualBlock(in_channels=32, out_channels=64, stride=2)
         self.fc = nn.Linear(64, num_classes)
 
     def forward(self, x):
@@ -42,8 +43,30 @@ class BasicConv2d(nn.Module):
         return x
     
 
-def make_block(in_channels, out_channels, stride):
-    layers = []
-    layers.append(BasicConv2d(in_channels, out_channels, stride=stride))
-    layers.append(BasicConv2d(out_channels, out_channels, stride=1))
-    return nn.Sequential(*layers)
+class ResidualBlock(nn.Module):
+    def __init__(self, in_channels, out_channels, stride=1):
+        super().__init__()
+        self.conv = nn.Sequential(
+            BasicConv2d(in_channels, out_channels, stride=stride),
+            nn.Conv2d(out_channels, out_channels, stride=1, padding=1),
+        )
+        self.pool = nn.MaxPool2d(kernel_size=2, stride=2)
+
+    def forward(self, x):
+        identity = x
+        out:Tensor = self.conv(x)
+        identity = self._shortcut_transform(identity, out.shape)
+        return F.relu(out + identity)
+    
+    def _shortcut_transform(self, identity:Tensor, out_shape):
+        _, in_c, in_h, in_w = identity.shape
+        _, out_c, out_h, out_w = out_shape
+
+        if in_h > out_h or in_w > out_w:
+            identity = self.pool(identity)
+
+        if in_c < out_c:
+            pad_c = out_c - in_c
+            identity = F.pad(identity, (0,0,0,0,0,pad_c))
+
+        return identity
