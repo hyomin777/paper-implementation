@@ -32,11 +32,18 @@ class Encoder(nn.Module):
     def __init__(self, d_embed):
         super().__init__()
         self.multi_head_attention = MultiHeadAttention(d_embed)
-        self.ffn = FFN()
+        self.ffn = FFN(d_embed)
         self.add_norm1 = AddNorm(d_embed)
         self.add_norm2 = AddNorm(d_embed)
 
     def forward(self, x):
+        residual = x
+        x = self.multi_head_attention(x)
+        x = self.add_norm1(x, residual)
+        
+        residual = x
+        x = self.ffn(x)
+        x = self.add_norm2(x, residual)
         return x
 
 
